@@ -10,9 +10,9 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
+  const [signInWithEmailAndPassword, , loading, errorFromHook] = useSignInWithEmailAndPassword(auth);
 
-  const router = useRouter()
+  const router = useRouter();
 
   // Sign-in logic
   const handleSignin = async () => {
@@ -22,31 +22,34 @@ const Login = () => {
       setError("Valid email, please.");
       return;
     }
-
+  
     if (password.length < 6) {
       setError("6 character password, please.");
       return;
     }
-
+  
     try {
-      const res = await signInWithEmailAndPassword(email, password);
-      console.log({ res });
-      sessionStorage.setItem('user', true)
+      // Attempt to sign in
+      await signInWithEmailAndPassword(email, password);
+      sessionStorage.setItem('user', true);
       setEmail("");
       setPassword("");
       router.push('/homepage');
     } catch (e) {
+      // If errorFromHook exists, use it for detailed error handling
+      if (errorFromHook) {
+        console.error('Error from hook:', errorFromHook);
+        setError("Incorrect email or password. Please try again.");
+      } else {
+        // General fallback error handling
         console.error('Error object:', e);
-        console.error('Error message:', e.message);
-  
-        const errorMessage = e.message || 'Failed to sign in. Please try again.';
-        if (errorMessage.includes("INVALID_LOGIN_CREDENTIALS")) {
-          setError("Incorrect email or password. Please try again.");
-        } else {
-          setError(errorMessage);
-        }
+        setError('Failed to sign in. Please try again.');
+      }
     }
   };
+  
+  
+  
 
   return (
     <div
