@@ -36,17 +36,17 @@ const Login = () => {
       setPassword("");
       router.push('/homepage');
     } catch (e) {
-      // If errorFromHook exists, use it for detailed error handling
-      if (errorFromHook) {
-        console.error('Error from hook:', errorFromHook);
-        setError("Incorrect email or password. Please try again.");
+      // Detailed error handling for Firebase errors
+      if (errorFromHook?.message || e.message) {
+        setError(errorFromHook?.message || e.message);
       } else {
-        // General fallback error handling
-        console.error('Error object:', e);
         setError('Failed to sign in. Please try again.');
       }
+      console.error('Error object:', e); // Keep this for debugging
     }
   };
+  
+  
   
   
   
